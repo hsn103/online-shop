@@ -1,0 +1,13 @@
+[Unit]
+Description=Nika clothing shop demo
+After=network.target
+
+[Service]
+WorkingDirectory=/var/www/hxshop
+ExecStart=/usr/bin/node server.js
+Restart=always
+User=www-data
+Environment=NODE_ENV=production
+
+[Install]
+WantedBy=multi-user.target

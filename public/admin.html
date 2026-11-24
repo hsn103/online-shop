@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><title>پنل مدیریت فروشگاه</title>
+<link rel="stylesheet" href="/style.css">
+<style>
+ body{padding:18px;background:#f4f1ec;font-family:'Vazirmatn',system-ui,sans-serif;line-height:1.8}.aw{max-width:1100px;margin:0 auto;display:grid;gap:20px}.panel{display:grid;gap:20px}
+ .box{background:#fff;border:1px solid var(--line);border-radius:18px;padding:20px;display:grid;gap:14px;overflow-x:auto}
+ h2,h3{font-family:'Vazirmatn',sans-serif;font-weight:800}
+ table{width:100%;border-collapse:collapse;font-size:.88rem}th,td{text-align:start;padding:8px;border-bottom:1px solid var(--line);vertical-align:middle}th{color:var(--muted);font-weight:700;white-space:nowrap}
+ .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px}.stat{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px}.stat b{display:block;font-size:1.7rem;font-weight:800}.stat span{color:var(--muted);font-size:.85rem}
+ .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}@media(max-width:760px){.g3{grid-template-columns:1fr 1fr}}
+ label{display:grid;gap:4px;font-weight:700;font-size:.85rem}fieldset{border:1.5px solid var(--line);border-radius:14px;padding:14px;display:grid;gap:12px;min-width:0}legend{padding:0 8px;font-weight:800}
+ .chk{display:flex!important;gap:8px;align-items:center;grid-template-columns:none}.chk input{width:auto}.checks{display:flex;gap:18px;flex-wrap:wrap}
+ .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.tabs{display:flex;gap:8px;flex-wrap:wrap}.tabs .chip,.langbar .chip{cursor:pointer;background:#fff;font-family:inherit}.tabs .chip[aria-pressed=true],.langbar .chip[aria-pressed=true]{background:var(--ink);color:#fff;border-color:var(--ink)}
+ .srow{display:grid;grid-template-columns:1fr 1fr auto;gap:8px}.imgs{display:flex;gap:10px;flex-wrap:wrap}.imgs figure{margin:0;width:112px;display:grid;gap:4px;text-align:center;font-size:.78rem}.imgs img{width:112px;height:140px;object-fit:contain;background:var(--sand);border-radius:10px;border:1px solid var(--line)}
+ .thumb{width:44px;height:56px;object-fit:contain;background:var(--sand);border-radius:8px}.btn{font-family:inherit}.sm{padding:5px 14px;font-size:.8rem}
+ .ok{color:#15803d}.bad{color:#b91c1c}.pill{background:var(--sand);border-radius:999px;padding:1px 12px;font-size:.78rem;font-weight:700}
+ small.h{color:var(--muted);font-weight:400}#toast{background:var(--ink)}
+ .items{display:grid;gap:4px;padding:8px 0;font-size:.85rem}.items div{display:flex;gap:10px;align-items:center}.items img{width:34px;height:42px;object-fit:contain;background:var(--sand);border-radius:6px}
+</style></head>
+<body>
+<div id="toast" role="status" hidden></div>
+<div class="aw" id="login"><form class="box" id="lf" style="max-width:360px;margin:12vh auto;width:100%"><h2>ورود مدیر</h2><input type="password" name="password" placeholder="رمز عبور" required autofocus autocomplete="current-password"><p class="msg" id="lerr"></p><button class="btn dark">ورود</button></form></div>
+
+<div class="aw" id="panel" hidden>
+  <div class="row" style="justify-content:space-between"><h2>پنل مدیریت فروشگاه</h2><div class="row"><a class="btn line sm" href="/fa" target="_blank">مشاهده فروشگاه</a><button class="btn line sm" id="out">خروج</button></div></div>
+  <div class="tabs" id="tabs"><button class="chip" data-tab="dash">داشبورد</button><button class="chip" data-tab="products">محصولات</button><button class="chip" data-tab="carts">سبدهای خرید</button><button class="chip" data-tab="orders">سفارش‌ها</button><button class="chip" data-tab="users">کاربران</button></div>
+
+  <div class="panel" data-panel="dash"><div class="stats" id="stats"></div></div>
+
+  <div class="panel" data-panel="products" hidden>
+    <section class="box"><h3 id="ptitle">افزودن محصول</h3>
+    <form id="pf" style="display:grid;gap:14px">
+      <div class="g3">
+        <label>دسته<select name="category"><option value="women">زنانه</option><option value="men">مردانه</option><option value="kids">بچگانه</option><option value="shoes">کفش</option><option value="accessories">اکسسوری</option></select></label>
+        <label>قیمت (تومان)<input name="price" inputmode="numeric" dir="ltr" autocomplete="off" required></label>
+        <label>قیمت قبل از تخفیف (اختیاری)<input name="old_price" inputmode="numeric" dir="ltr" autocomplete="off"></label>
+        <label>رنگ پس‌زمینه کارت<input name="tone" type="color" value="#ece4d6" style="height:44px;padding:4px"></label>
+        <label>ترتیب نمایش<input name="sort" inputmode="numeric" dir="ltr" value="0"></label>
+        <label>آدرس (slug) <small class="h">اختیاری، انگلیسی</small><input name="slug" dir="ltr"></label>
+      </div>
+      <div class="checks"><label class="chk"><input type="checkbox" name="active" checked> نمایش در سایت</label><label class="chk"><input type="checkbox" name="is_new"> برچسب «جدید»</label><label class="chk"><input type="checkbox" name="featured"> ویژه</label></div>
+      <fieldset><legend>عنوان و توضیحات</legend><div class="tabs langbar" id="langbar"><button type="button" class="chip" data-lang="fa" aria-pressed="true">فارسی</button><button type="button" class="chip" data-lang="en" aria-pressed="false">English</button></div>
+        <div id="trbox" style="display:grid;gap:12px"><label>عنوان<input data-t="title"></label><label>توضیح کوتاه<textarea data-t="description" rows="3"></textarea></label><label>جزئیات و نگهداری <small class="h">هر خط یک مورد</small><textarea data-t="details" rows="4"></textarea></label></div>
+        <small class="h">فارسی زبان اصلی است. اگر انگلیسی را خالی بگذارید، متن فارسی نمایش داده می‌شود.</small></fieldset>
+      <fieldset><legend>سایزها و موجودی</legend>
+        <div class="row"><small class="h">قالب آماده:</small><button type="button" class="btn line sm" data-preset="S,M,L,XL,XXL">لباس S–XXL</button><button type="button" class="btn line sm" data-preset="28,30,32,34,36,38">شلوار ۲۸–۳۸</button><button type="button" class="btn line sm" data-preset="38,39,40,41,42,43,44">کفش ۳۸–۴۴</button><button type="button" class="btn line sm" data-preset="2-3Y,4-5Y,6-7Y,8-9Y">بچگانه</button><button type="button" class="btn line sm" data-preset="ONE">تک‌سایز</button></div>
+        <div id="sizeRows" style="display:grid;gap:8px"></div><button type="button" class="btn line sm" id="addSize" style="justify-self:start">+ افزودن سایز</button></fieldset>
+      <fieldset><legend>تصاویر (PNG شفاف هم قابل قبول است)</legend><div class="imgs" id="imgRows"></div><input type="file" id="files" accept="image/jpeg,image/png,image/webp" multiple>
+        <small class="h">تا ۸ فایل در هر بار، هر کدام تا ۱۰ مگابایت. عکس‌ها خودکار به حداکثر ۱۶۰۰ پیکسل و WebP کوچک می‌شوند. عکس اول، تصویر اصلی است و عکس دوم هنگام هاور نمایش داده می‌شود.</small></fieldset>
+      <p class="msg" id="perr" role="status"></p><div class="row"><button class="btn dark">ذخیره</button><button type="button" class="btn line" id="pnew">محصول جدید</button></div>
+    </form></section>
+    <section class="box"><h3>محصولات</h3><table><thead><tr><th></th><th>عنوان</th><th>دسته</th><th>قیمت</th><th>موجودی</th><th>وضعیت</th><th></th></tr></thead><tbody id="prodRows"></tbody></table></section>
+  </div>
+
+  <div class="panel" data-panel="carts" hidden><section class="box"><h3>سبدهای خرید کاربران</h3><p class="muted small">سبدهای دارای کالا (مهمان یا کاربر واردشده) به ترتیب آخرین تغییر.</p>
+    <table><thead><tr><th>کاربر</th><th>تعداد</th><th>جمع</th><th>آخرین تغییر</th><th></th></tr></thead><tbody id="cartRows"></tbody></table></section></div>
+  <div class="panel" data-panel="orders" hidden><section class="box"><h3>سفارش‌ها</h3><table><thead><tr><th>#</th><th>مشتری</th><th>اقلام</th><th>مبلغ</th><th>پرداخت</th><th>وضعیت</th></tr></thead><tbody id="orderRows"></tbody></table></section></div>
+  <div class="panel" data-panel="users" hidden><section class="box"><h3>کاربران ثبت‌نام‌شده</h3><table><thead><tr><th>#</th><th>نام</th><th>ایمیل</th><th>تاریخ</th><th>سفارش‌ها</th></tr></thead><tbody id="userRows"></tbody></table></section></div>
+</div>
+
+<script>
+const $=s=>document.querySelector(s),$$=s=>document.querySelectorAll(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const nf=new Intl.NumberFormat('fa-IR'),N=n=>nf.format(n),M=n=>N(n)+' تومان';
+const parse=(j,d)=>{try{return JSON.parse(j)??d}catch{return d}};
+const toEn=s=>String(s??'').replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d));
+const digits=s=>toEn(s).replace(/\D/g,'');
+const dt=s=>new Date(String(s).replace(' ','T')+'Z').toLocaleString('fa-IR',{dateStyle:'medium',timeStyle:'short'});
+const show=ok=>{$('#login').hidden=ok;$('#panel').hidden=!ok};
+let tT;const toast=(t,bad)=>{const e=$('#toast');e.textContent=t;e.style.background=bad?'#b91c1c':'';e.hidden=false;clearTimeout(tT);tT=setTimeout(()=>e.hidden=true,6000)};
+const api=async(u,m='GET',b)=>{const o={method:m,headers:{}};if(b instanceof FormData)o.body=b;else if(b){o.headers['Content-Type']='application/json';o.body=JSON.stringify(b)}
+  const r=await fetch(u,o);let d={};try{d=await r.json()}catch{}
+  if(r.status===401&&!u.endsWith('/login')){show(false);throw new Error('نشست منقضی شد؛ دوباره وارد شوید')}
+  if(!r.ok)throw new Error(d.error||'خطا');return d};
+const note=(el,t,ok)=>{el.textContent=t;el.className='msg'+(ok?' ok':'')};
+const CAT={women:'زنانه',men:'مردانه',kids:'بچگانه',shoes:'کفش',accessories:'اکسسوری'};
+const ST={pending:'در انتظار بررسی',processing:'در حال آماده‌سازی',shipped:'ارسال شد',delivered:'تحویل داده شد',canceled:'لغو شد'};
+const PAY={cod:'پرداخت در محل',card:'کارت‌به‌کارت'};
+
+// ---- تب‌ها
+const TABS=['dash','products','carts','orders','users'];
+const tab=n=>{$$('[data-panel]').forEach(p=>p.hidden=p.dataset.panel!==n);$$('#tabs [data-tab]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.tab===n));try{history.replaceState(null,'','#'+n)}catch{}};
+$('#tabs').onclick=e=>{const b=e.target.closest('[data-tab]');if(b)tab(b.dataset.tab)};tab(TABS.includes(location.hash.slice(1))?location.hash.slice(1):'dash');
+
+// ---- محصولات
+let prods=[],P={id:null,images:[],sizes:[],tr:{fa:{},en:{}},lang:'fa'};const F=()=>$('#pf').elements;
+const trRead=()=>{$$('#trbox [data-t]').forEach(i=>P.tr[P.lang][i.dataset.t]=i.value)};
+const trWrite=()=>{$$('#trbox [data-t]').forEach(i=>i.value=P.tr[P.lang][i.dataset.t]||'');$('#trbox').dir=P.lang==='fa'?'rtl':'ltr';$$('#langbar [data-lang]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.lang===P.lang))};
+$('#langbar').onclick=e=>{const b=e.target.closest('[data-lang]');if(!b)return;trRead();P.lang=b.dataset.lang;trWrite()};
+const renderSizes=()=>{$('#sizeRows').innerHTML=P.sizes.map((s,i)=>`<div class="srow" data-i="${i}"><input data-k="size" value="${esc(s.size)}" placeholder="سایز (مثلاً M یا ۴۲)" dir="ltr"><input data-k="stock" value="${s.stock}" placeholder="موجودی" inputmode="numeric" dir="ltr"><button type="button" class="btn line sm" data-del>حذف</button></div>`).join('')};
+$('#sizeRows').addEventListener('input',e=>{const k=e.target.dataset.k;if(!k)return;const s=P.sizes[+e.target.closest('.srow').dataset.i];s[k]=k==='stock'?(digits(e.target.value)||0):e.target.value});
+$('#sizeRows').addEventListener('click',e=>{if(e.target.closest('[data-del]')){P.sizes.splice(+e.target.closest('.srow').dataset.i,1);renderSizes()}});
+$('#addSize').onclick=()=>{P.sizes.push({size:'',stock:0});renderSizes()};
+$$('[data-preset]').forEach(b=>b.onclick=()=>{const old=Object.fromEntries(P.sizes.map(s=>[s.size,s.stock]));P.sizes=b.dataset.preset.split(',').map(s=>({size:s,stock:old[s]??10}));renderSizes()});
+const renderImgs=()=>{$('#imgRows').innerHTML=P.images.map((u,i)=>`<figure data-i="${i}"><img src="${esc(u)}" alt=""><span class="row" style="justify-content:center">${i?`<button type="button" class="btn line sm" data-act="first">اصلی</button>`:'<b>اصلی</b>'}<button type="button" class="btn line sm" data-act="del">حذف</button></span></figure>`).join('')};
+$('#imgRows').onclick=e=>{const a=e.target.closest('[data-act]');if(!a)return;const i=+a.closest('figure').dataset.i;if(a.dataset.act==='del')P.images.splice(i,1);else P.images.unshift(...P.images.splice(i,1));renderImgs()};
+$('#files').onchange=async e=>{const fd=new FormData();[...e.target.files].forEach(f=>fd.append('images',f));
+  try{const r=await api('/api/admin/upload','POST',fd);P.images.push(...r.urls);renderImgs();const b=r.info.reduce((x,i)=>x+i.before,0),c=r.info.reduce((x,i)=>x+i.after,0);toast(`🗜️ ${r.info.length} عکس بهینه شد: ${(b/1048576).toFixed(1)} MB ← ${Math.max(1,Math.round(c/1024))} KB`)}catch(er){toast(er.message,true)}e.target.value=''};
+$('#pf').elements.price.oninput=$('#pf').elements.old_price.oninput=e=>{const d=digits(e.target.value);e.target.value=d?nf.format(+d).replace(/٬/g,','):''};
+function loadForm(r){const p=r?{...r,images:parse(r.images,[]),sizes:parse(r.sizes,[]),tr:parse(r.i18n,{})}:null,f=F();
+  P={id:r?r.id:null,images:p?p.images:[],sizes:p?p.sizes.map(s=>({...s})):[],tr:{fa:{...(p?.tr.fa||{})},en:{...(p?.tr.en||{})}},lang:'fa'};
+  f.category.value=p?.category||'women';f.price.value=p?nf.format(p.price).replace(/٬/g,','):'';f.old_price.value=p&&p.old_price?nf.format(p.old_price).replace(/٬/g,','):'';
+  f.tone.value=p?.tone||'#ece4d6';f.sort.value=p?p.sort:0;f.slug.value=p?.slug||'';f.active.checked=p?!!p.active:true;f.is_new.checked=!!p?.is_new;f.featured.checked=!!p?.featured;
+  $('#ptitle').textContent=r?'ویرایش محصول':'افزودن محصول';note($('#perr'),'');trWrite();renderSizes();renderImgs()}
+$('#pnew').onclick=()=>loadForm(null);
+$('#pf').onsubmit=async e=>{e.preventDefault();trRead();const f=F();
+  const b={category:f.category.value,price:digits(f.price.value),old_price:digits(f.old_price.value),tone:f.tone.value,sort:digits(f.sort.value),slug:f.slug.value,active:f.active.checked,is_new:f.is_new.checked,featured:f.featured.checked,images:P.images,sizes:P.sizes,i18n:P.tr};
+  try{const r=P.id?await api('/api/admin/products/'+P.id,'PUT',b):await api('/api/admin/products','POST',b);await loadProducts();loadForm(prods.find(x=>x.slug===r.slug)||null);note($('#perr'),'ذخیره شد ✓',true)}catch(er){note($('#perr'),er.message)}};
+const loadProducts=async()=>{prods=await api('/api/admin/products');
+  $('#prodRows').innerHTML=prods.map(r=>{const t=parse(r.i18n,{}).fa?.title||r.slug,sz=parse(r.sizes,[]),stock=sz.reduce((a,s)=>a+s.stock,0),im=parse(r.images,[])[0];
+    return `<tr><td>${im?`<img class="thumb" src="${esc(im)}" alt="">`:''}</td><td><b>${esc(t)}</b><br><small class="muted" dir="ltr">${esc(r.slug)}</small></td><td>${CAT[r.category]||''}</td><td>${M(r.price)}${r.old_price>r.price?`<br><s class="muted">${N(r.old_price)}</s>`:''}</td>
+    <td class="${stock?'':'bad'}">${N(stock)} <small class="muted">(${N(sz.length)} سایز)</small></td><td>${r.active?'<span class="pill ok">فعال</span>':'<span class="pill">مخفی</span>'}</td>
+    <td><div class="row"><button class="btn line sm" data-e="${r.id}">ویرایش</button><button class="btn line sm" data-d="${r.id}">حذف</button></div></td></tr>`}).join('')};
+$('#prodRows').onclick=async e=>{const ed=e.target.closest('[data-e]'),del=e.target.closest('[data-d]');
+  if(ed){loadForm(prods.find(x=>x.id==ed.dataset.e));scrollTo({top:$('#ptitle').offsetTop-20,behavior:'smooth'})}
+  if(del&&confirm('این محصول حذف شود؟ (از سبدهای خرید هم برداشته می‌شود)')){await api('/api/admin/products/'+del.dataset.d,'DELETE');if(P.id==del.dataset.d)loadForm(null);loadProducts();loadStats()}};
+
+// ---- سبدها، سفارش‌ها، کاربران
+const itemsHtml=(its)=>`<div class="items">${its.map(i=>`<div>${i.image?`<img src="${esc(i.image)}" alt="">`:''}<span>${esc(i.title)} · سایز ${esc(i.size)} × ${N(i.qty)}</span><b style="margin-inline-start:auto">${M(i.price*i.qty)}</b></div>`).join('')}</div>`;
+const loadCarts=async()=>{const c=await api('/api/admin/carts');
+  $('#cartRows').innerHTML=c.map(x=>`<tr><td>${x.user_id?`<b>${esc(x.name)}</b><br><small class="muted" dir="ltr">${esc(x.email)}</small>`:'<span class="pill">مهمان</span>'}<details><summary class="more small">مشاهده اقلام</summary>${itemsHtml(x.items)}</details></td>
+    <td>${N(x.count)}</td><td><b>${M(x.total)}</b></td><td>${dt(x.updated_at)}</td><td><button class="btn line sm" data-clear="${x.id}">خالی کردن</button></td></tr>`).join('')||'<tr><td colspan="5">سبد فعالی وجود ندارد</td></tr>'};
+$('#cartRows').onclick=async e=>{const b=e.target.closest('[data-clear]');if(b&&confirm('سبد این کاربر خالی شود؟')){await api('/api/admin/carts/'+b.dataset.clear,'DELETE');loadCarts();loadStats()}};
+const loadOrders=async()=>{const o=await api('/api/admin/orders');
+  $('#orderRows').innerHTML=o.map(x=>`<tr><td><b>${N(x.id)}</b><br><small class="muted">${dt(x.created_at)}</small></td><td>${esc(x.name)}<br><small dir="ltr">${esc(x.phone)}</small><br><small class="muted">${esc(x.city)}، ${esc(x.address)}</small></td>
+    <td><details><summary class="more small">${N(x.items.length)} قلم</summary>${itemsHtml(x.items.map(i=>({title:i.title_fa,size:i.size,qty:i.qty,price:i.price,image:i.image})))}</details></td><td><b>${M(x.total)}</b></td><td>${PAY[x.payment]||''}</td>
+    <td><select data-o="${x.id}" ${x.status==='canceled'?'disabled':''}>${Object.entries(ST).map(([k,v])=>`<option value="${k}" ${k===x.status?'selected':''}>${v}</option>`).join('')}</select></td></tr>`).join('')||'<tr><td colspan="6">سفارشی نیست</td></tr>'};
+$('#orderRows').onchange=async e=>{const s=e.target.closest('[data-o]');if(!s)return;
+  try{await api('/api/admin/orders/'+s.dataset.o,'PATCH',{status:s.value});if(s.value==='canceled')toast('سفارش لغو و موجودی برگردانده شد');loadOrders();loadProducts();loadStats()}catch(er){toast(er.message,true);loadOrders()}};
+const loadUsers=async()=>{const u=await api('/api/admin/users');$('#userRows').innerHTML=u.map(x=>`<tr><td>${N(x.id)}</td><td>${esc(x.name)}</td><td dir="ltr">${esc(x.email)}</td><td>${dt(x.created_at)}</td><td>${N(x.orders)}</td></tr>`).join('')||'<tr><td colspan="5">کاربری نیست</td></tr>'};
+const loadStats=async()=>{const s=await api('/api/admin/stats');
+  $('#stats').innerHTML=[['محصولات',N(s.products)],['سفارش‌ها',N(s.orders)],['درآمد (بدون لغوشده)',M(s.revenue)],['سبدهای فعال',N(s.carts)],['کاربران',N(s.users)]].map(([l,v])=>`<div class="stat"><b>${v}</b><span>${l}</span></div>`).join('')};
+const loadAll=()=>Promise.all([loadStats(),loadProducts(),loadCarts(),loadOrders(),loadUsers()]);
+
+$('#lf').onsubmit=async e=>{e.preventDefault();note($('#lerr'),'');try{await api('/api/admin/login','POST',{password:e.target.elements.password.value});show(true);loadForm(null);await loadAll()}catch(er){note($('#lerr'),er.message)}};
+$('#out').onclick=async()=>{await api('/api/admin/logout','POST');show(false)};
+loadForm(null);api('/api/admin/me').then(()=>{show(true);return loadAll()}).catch(()=>show(false));
+</script></body></html>
